@@ -1,5 +1,5 @@
 module "tfplan-functions" {
-    source = "https://raw.githubusercontent.com/jpapazian2000/terraform-guides-sentinel/governance/third-generation/common-functions/tfplan-functions/tfplan-functions.sentinel"
+    source = "https://raw.githubusercontent.com/jpapazian2000/tree/master/terraform-guides-sentinel/governance/third-generation/common-functions/tfplan-functions/tfplan-functions.sentinel"
 }
 
 policy "enforce-mandatory-labels" {
