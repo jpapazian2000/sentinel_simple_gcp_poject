@@ -1,39 +1,25 @@
 # This policy uses the Sentinel tfplan/v2 import to require that
-# specified GCP resources have all mandatory labels
+# all GCE compute instances have all mandatory labels
+
+# Note that the comparison is case-sensitive but also that GCE labels are only
+# allowed to contain lowercase letters, numbers, hypens, and underscores.
 
 # Import common-functions/tfplan-functions/tfplan-functions.sentinel
 # with alias "plan"
 import "tfplan-functions" as plan
 
-# Import gcp-functions/gcp-functions.sentinel
-# with alias "gcp"
-import "gcp-functions" as gcp
-
-# List of GCP resources that are required to have name/value labels.
-param resource_types default [
-  "google_project",
-  "google_compute_instance",
-  "google_storage_bucket",
-]
-
 # List of mandatory labels
-param mandatory_labels default [
-  "project",
-  "department",
-]
+mandatory_labels = ["billing", "department", "BU"]
 
-# Get all GCP Resources with standard labels
-allGCPResourcesWithStandardLabels =
-                        gcp.find_resources_with_standard_labels(resource_types)
+# Get all GCE compute instances
+allGCEInstances = plan.find_resources("google_compute_instance")
 
-# Filter to GCP resources with violations using list of resources
+# Filter to GCE compute instances with violations
 # Warnings will be printed for all violations since the last parameter is true
-violatingGCPResources =
-      plan.filter_attribute_not_contains_list(allGCPResourcesWithStandardLabels,
-                    "labels", mandatory_labels, true)
-
+violatingGCEInstances = plan.filter_attribute_not_contains_list(allGCEInstances,
+                        "labels", mandatory_labels, true)
 
 # Main rule
 main = rule {
-  length(violatingGCPResources["messages"]) is 0
+  length(violatingGCEInstances["messages"]) is 0
 }
